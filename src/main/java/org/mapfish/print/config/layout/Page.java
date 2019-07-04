@@ -110,16 +110,17 @@ public class Page {
     }
 
     public String getPageSize(RenderingContext context, PJsonObject params) {
-        return PDFUtils.evalString(context, params, pageSize, null);
+    	String pageSizeEval = PDFUtils.evalString(context, params, pageSize, null); 
+        try {
+            PageSize.getRectangle(pageSizeEval);
+        } catch (RuntimeException e) {
+            throw new InvalidValueException("pageSize", pageSizeEval);
+        }
+        return pageSizeEval;
     }
 
     public void setPageSize(String pageSize) {
         this.pageSize = pageSize;
-        try {
-            PageSize.getRectangle(pageSize);
-        } catch (RuntimeException e) {
-            throw new InvalidValueException("pageSize", pageSize);
-        }
     }
 
     public void setHeader(HeaderFooter header) {
