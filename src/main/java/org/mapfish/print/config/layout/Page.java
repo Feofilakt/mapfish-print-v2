@@ -46,7 +46,7 @@ public class Page {
     private String marginTop = "20";
     private String marginBottom = "20";
     private String backgroundPdf = null;
-    private boolean landscape = false;
+    private String landscape = "false";
     private String condition = null;
 
     public void render(PJsonObject params, RenderingContext context) throws DocumentException {
@@ -83,7 +83,7 @@ public class Page {
 
     public Rectangle getPageSizeRect(RenderingContext context, PJsonObject params) {
         final Rectangle result = PageSize.getRectangle(getPageSize(context, params));
-        if (landscape) {
+        if (Boolean.parseBoolean(PDFUtils.evalString(context, params, landscape, null))) {
             return result.rotate();
         } else {
             return result;
@@ -167,7 +167,7 @@ public class Page {
         this.backgroundPdf = backgroundPdf;
     }
 
-    public void setLandscape(boolean landscape) {
+    public void setLandscape(String landscape) {
         this.landscape = landscape;
     }
 
