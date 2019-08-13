@@ -52,9 +52,9 @@ public class ValidationTest extends PrintTestCase {
 
         page.validate();
 
-        innerColumns.setWidth(100);
-        innerColumns.setAbsoluteX(10);
-        innerColumns.setAbsoluteY(100);
+        innerColumns.setWidth("100");
+        innerColumns.setAbsoluteX("10");
+        innerColumns.setAbsoluteY("100");
 
         try {
             page.validate();
@@ -70,7 +70,7 @@ public class ValidationTest extends PrintTestCase {
         columns.setItems(Arrays.asList((Block) textBlock));
         columns.validate();
 
-        columns.setWidth(100);
+        columns.setWidth("100");
         try {
             columns.validate();
             fail("must throw an InvalidValueException");
@@ -78,7 +78,7 @@ public class ValidationTest extends PrintTestCase {
             //expected
         }
 
-        columns.setAbsoluteX(100);
+        columns.setAbsoluteX("100");
         try {
             columns.validate();
             fail("must throw an InvalidValueException");
@@ -86,7 +86,7 @@ public class ValidationTest extends PrintTestCase {
             //expected
         }
 
-        columns.setAbsoluteY(100);
+        columns.setAbsoluteY("100");
         columns.validate();
     }
     @Test

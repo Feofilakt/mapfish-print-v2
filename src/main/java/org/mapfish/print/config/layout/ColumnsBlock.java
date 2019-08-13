@@ -44,27 +44,30 @@ public class ColumnsBlock extends Block {
     private int absoluteY = Integer.MIN_VALUE;
     private int width = Integer.MIN_VALUE;
     */
-    private double absoluteX = Double.MIN_VALUE;
-    private double absoluteY = Double.MIN_VALUE;
-    private double width = Double.MIN_VALUE;
+    private String absoluteX = null;
+    private String absoluteY = null;
+    private String width = null;
     private int nbColumns = Integer.MIN_VALUE;
     private TableConfig config = null;
 
     public void render(final PJsonObject params, PdfElement target, final RenderingContext context) throws DocumentException {
-
         if (isAbsolute()) {
+        	final double evalAbsoluteX = Double.parseDouble(PDFUtils.evalString(context, params, this.absoluteX, null));
+        	final double evalAbsoluteY = Double.parseDouble(PDFUtils.evalString(context, params, this.absoluteY, null));
+        	final double evalWidth = Double.parseDouble(PDFUtils.evalString(context, params, this.width, null));
+        	
             context.getCustomBlocks().addAbsoluteDrawer(new PDFCustomBlocks.AbsoluteDrawer() {
                 public void render(PdfContentByte dc) throws DocumentException {
                     final PdfPTable table = PDFUtils.buildTable(items, params, context, nbColumns, config);
                     if (table != null) {
-                        table.setTotalWidth((float) width);
+                        table.setTotalWidth((float) evalWidth);
                         table.setLockedWidth(true);
 
                         if (widths != null) {
                             table.setWidths(widths);
                         }
 
-                        table.writeSelectedRows(0, -1, (float) absoluteX, (float) absoluteY, dc);
+                        table.writeSelectedRows(0, -1, (float) evalAbsoluteX, (float) evalAbsoluteY, dc);
                     }
                 }
             });
@@ -89,15 +92,15 @@ public class ColumnsBlock extends Block {
         this.widths = widths;
     }
 
-    public void setAbsoluteX(double absoluteX) {
+    public void setAbsoluteX(String absoluteX) {
         this.absoluteX = absoluteX;
     }
 
-    public void setAbsoluteY(double absoluteY) {
+    public void setAbsoluteY(String absoluteY) {
         this.absoluteY = absoluteY;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(String width) {
         this.width = width;
     }
 
@@ -106,9 +109,9 @@ public class ColumnsBlock extends Block {
     }
 
     public boolean isAbsolute() {
-        return absoluteX != Double.MIN_VALUE &&
-                absoluteY != Double.MIN_VALUE &&
-                width != Double.MIN_VALUE;
+        return absoluteX != null &&
+                absoluteY != null &&
+                width != null;
     }
 
     public MapBlock getMap(String name) {
@@ -130,8 +133,8 @@ public class ColumnsBlock extends Block {
         if (items == null) throw new InvalidValueException("items", "null");
         if (items.size() < 1) throw new InvalidValueException("items", "[]");
 
-        if (!((absoluteX != Double.MIN_VALUE && absoluteY != Double.MIN_VALUE && width != Double.MIN_VALUE) ||
-                (absoluteX == Double.MIN_VALUE && absoluteY == Double.MIN_VALUE && width == Double.MIN_VALUE))) {
+        if (!((absoluteX != null && absoluteY != null && width != null) ||
+                (absoluteX == null && absoluteY == null && width == null))) {
             throw new InvalidValueException("absoluteX, absoluteY or width", "all of them must be defined or none");
         }
 
