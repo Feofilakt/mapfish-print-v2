@@ -50,7 +50,7 @@ import com.lowagie.text.pdf.BaseFont;
 public class ScalebarBlock extends FontBlock {
     private int maxSize = 150;
 
-    private Type type = Type.LINE;
+    private String type = "LINE";
 
     private int intervals = 3;
 
@@ -93,13 +93,13 @@ public class ScalebarBlock extends FontBlock {
         final double intervalDistance = getNearestNiceValue(maxWidthIntervaleDistance, scaleUnit);
 
         final Font pdfFont = getPdfFont();
-        tryLayout(context, target, pdfFont, scaleUnit, scale, intervalDistance, 0);
+        tryLayout(context, params, target, pdfFont, scaleUnit, scale, intervalDistance, 0);
     }
 
     /**
      * Try recursively to find the correct layout.
      */
-    private void tryLayout(RenderingContext context, PdfElement target, Font pdfFont, DistanceUnit scaleUnit, double scale, double intervalDistance, int tryNumber) throws DocumentException {
+    private void tryLayout(RenderingContext context, PJsonObject params, PdfElement target, Font pdfFont, DistanceUnit scaleUnit, double scale, double intervalDistance, int tryNumber) throws DocumentException {
         if (tryNumber > 3) {
             // no inspection ThrowableInstanceNeverThrown
             context.addError(new InvalidValueException("maxSize too small", maxSize));
@@ -137,12 +137,12 @@ public class ScalebarBlock extends FontBlock {
 
         if (intervals * intervalPaperWidth + leftLabelMargin + rightLabelMargin <= maxSize) {
             //the layout fits the maxSize
-            doLayout(context, target, pdfFont, labels, intervalPaperWidth, scaleUnit, intervalDistance, intervalUnit,
-                    leftLabelMargin, rightLabelMargin);
+            doLayout(context, params, target, pdfFont, labels, intervalPaperWidth, scaleUnit, intervalDistance,
+            		intervalUnit, leftLabelMargin, rightLabelMargin);
         } else {
             //not enough room because of the labels, try a smaller bar
             double nextIntervalDistance = getNearestNiceValue(intervalDistance * 0.9, scaleUnit);
-            tryLayout(context, target, pdfFont, scaleUnit, scale, nextIntervalDistance, tryNumber + 1);
+            tryLayout(context, params, target, pdfFont, scaleUnit, scale, nextIntervalDistance, tryNumber + 1);
         }
     }
 
@@ -160,7 +160,7 @@ public class ScalebarBlock extends FontBlock {
      * <p/>
      * Creates the drawer and schedule it for drawing when the position of the block is known.
      */
-    private void doLayout(RenderingContext context, PdfElement target, Font pdfFont, List<Label> labels,
+    private void doLayout(RenderingContext context, PJsonObject params, PdfElement target, Font pdfFont, List<Label> labels,
                           float intervalWidth, DistanceUnit scaleUnit, double intervalDistance,
                           DistanceUnit intervalUnit, float leftLabelPaperMargin, float rightLabelPaperMargin) throws DocumentException {
         float maxLabelHeight = 0.0f;
@@ -189,7 +189,8 @@ public class ScalebarBlock extends FontBlock {
             numSubIntervals = getNbSubIntervals(scaleUnit, intervalDistance, intervalUnit);
         }
 
-        ChunkDrawer drawer = ScalebarDrawer.create(context.getCustomBlocks(), this, type, labels, getBarSize(), getLabelDistance(),
+        Type evalType = Type.valueOf(PDFUtils.evalString(context, params, type, null).toUpperCase());
+        ChunkDrawer drawer = ScalebarDrawer.create(context.getCustomBlocks(), this, evalType, labels, getBarSize(), getLabelDistance(),
                 numSubIntervals, intervalWidth, pdfFont, leftLabelPaperMargin, rightLabelPaperMargin, maxLabelWidth, maxLabelHeight);
         target.add(PDFUtils.createPlaceholderTable(width, height, spacingAfter, drawer, align, context.getCustomBlocks()));
     }
@@ -271,9 +272,10 @@ public class ScalebarBlock extends FontBlock {
         if (maxSize <= 0) throw new InvalidValueException("maxSize", maxSize);
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
+
 
     public void setIntervals(int intervals) {
         if (intervals < 1) {

@@ -60,41 +60,41 @@ public class ScalebarTest extends PdfTestCase {
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
-        block.setType(Type.LINE);
+        block.setType("LINE");
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
-        block.setType(Type.LINE);
+        block.setType("LINE");
         block.setSubIntervals(true);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR_SUB);
+        block.setType("BAR_SUB");
         page1.getInternalObj().put("scale", 500000);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         page1.getInternalObj().put("scale", 100000);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         page1.getInternalObj().put("scale", 20000);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         block.setUnits(DistanceUnit.IN);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         block.setUnits(DistanceUnit.IN);
         page1.getInternalObj().put("scale", 100000);
         draw(page1, doc, context, block);
@@ -127,7 +127,7 @@ public class ScalebarTest extends PdfTestCase {
 
         //check label "overload"
         block = createBaseBlock();
-        block.setType(Type.BAR_SUB);
+        block.setType("BAR_SUB");
         block.setIntervals(7);
         block.setSubIntervals(true);
         block.setUnits(DistanceUnit.IN);
@@ -135,14 +135,14 @@ public class ScalebarTest extends PdfTestCase {
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
-        block.setType(Type.BAR);
+        block.setType("BAR");
         block.setIntervals(1);
         block.setSubIntervals(true);
         block.setUnits(DistanceUnit.IN);
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
-        block.setType(Type.LINE);
+        block.setType("LINE");
         block.setIntervals(1);
         block.setUnits(DistanceUnit.IN);
         draw(page1, doc, context, block);
@@ -151,17 +151,17 @@ public class ScalebarTest extends PdfTestCase {
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.LINE);
+        block.setType("LINE");
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         draw(page1, doc, context, block);
 
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR_SUB);
+        block.setType("BAR_SUB");
         draw(page1, doc, context, block);
 
 
@@ -171,7 +171,7 @@ public class ScalebarTest extends PdfTestCase {
         ScalebarBlock block;
         block = createBaseBlock();
         block.setSubIntervals(true);
-        block.setType(Type.BAR);
+        block.setType("BAR");
         block.setUnits(DistanceUnit.IN);
         block.setMaxSize(150);
         return block;
@@ -180,7 +180,7 @@ public class ScalebarTest extends PdfTestCase {
     private ScalebarBlock createBaseBlock() {
         ScalebarBlock block = new ScalebarBlock();
         block.setMaxSize(300);
-        block.setType(Type.LINE);
+        block.setType("LINE");
         block.setSpacingAfter(30);
         return block;
     }
