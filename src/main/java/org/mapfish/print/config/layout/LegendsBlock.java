@@ -66,9 +66,11 @@ public class LegendsBlock extends Block {
 
     private boolean borders = false; // for debugging or seeing effects
     private float maxWidth = Float.MAX_VALUE; // so setting max value!
+    private String maxWidthString = null;
     // multi column is always enabled when maxHeight is set to something
     // lower than the page size/height
     private float maxHeight = Float.MAX_VALUE;
+    private String maxHeightString = null;
 
     private float iconMaxWidth = Float.MAX_VALUE; // MAX_VALUE/0 means disable
     private float iconMaxHeight = 8; // 0 means disable
@@ -108,6 +110,15 @@ public class LegendsBlock extends Block {
      */
     @Override
     public void render(PJsonObject params, PdfElement target, RenderingContext context) throws DocumentException {
+    	if (maxWidthString != null) {
+    		maxWidth = Float.parseFloat(PDFUtils.evalString(context, params, maxWidthString, null));
+    		maxWidth = getMaxValueIfZero((float) maxWidth, "maxWidth");
+    	}
+    	if (maxHeightString != null) {
+    		maxHeight = Float.parseFloat(PDFUtils.evalString(context, params, maxHeightString, null));
+    		maxHeight = getMaxValueIfZero((float) maxHeight, "maxHeight");
+    	}
+    	
         Renderer renderer = new Renderer(params, context);
         renderer.render(target);
     }
@@ -678,8 +689,8 @@ public class LegendsBlock extends Block {
      *
      * @param maxWidth
      */
-    public void setMaxWidth(double maxWidth) {
-        this.maxWidth = getMaxValueIfZero((float) maxWidth, "maxWidth");
+    public void setMaxWidth(String maxWidth) {
+        this.maxWidthString = maxWidth;
     }
 
     /**
@@ -687,8 +698,8 @@ public class LegendsBlock extends Block {
      *
      * @param maxHeight if 0 means the column can be as hight as possible
      */
-    public void setMaxHeight(double maxHeight) {
-        this.maxHeight = getMaxValueIfZero((float) maxHeight, "maxHeight");
+    public void setMaxHeight(String maxHeight) {
+        this.maxHeightString = maxHeight;
     }
 
     /**
