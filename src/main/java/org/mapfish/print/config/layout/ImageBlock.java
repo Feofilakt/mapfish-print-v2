@@ -60,7 +60,8 @@ public class ImageBlock extends Block {
         } catch (URISyntaxException e) {
             throw new InvalidValueException("url", this.url, e);
         }
-        if (url.getPath().endsWith(".svg")) {
+        String path = url.getPath();
+        if (path != null && path.endsWith(".svg")) {
             drawSVG(context, params, target, url);
         } else {
             target.add(PDFUtils.createImageChunk(context, maxWidth, maxHeight, url, getRotationRadian(context, params)));
