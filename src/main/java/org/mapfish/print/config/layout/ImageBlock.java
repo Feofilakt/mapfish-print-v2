@@ -48,11 +48,20 @@ import com.lowagie.text.pdf.PdfContentByte;
  */
 public class ImageBlock extends Block {
     private String url = null;
-    private double maxWidth = 0.0;
-    private double maxHeight = 0.0;
+    private String maxWidth = "0.0";
+    private Double evaledMaxWidth = null;
+    private String maxHeight = "0.0";
+    private Double evaledMaxHeight = null;
     private String rotation = "0";
 
     public void render(PJsonObject params, PdfElement target, RenderingContext context) throws DocumentException {
+    	if (evaledMaxWidth == null) {
+    		evaledMaxWidth = Double.parseDouble(PDFUtils.evalString(context, params, maxWidth, null));
+    	}
+    	if (evaledMaxHeight == null) {
+    		evaledMaxHeight = Double.parseDouble(PDFUtils.evalString(context, params, maxHeight, null));
+    	}
+    	
         final URI url;
         try {
             final String urlTxt = PDFUtils.evalString(context, params, this.url, null);
@@ -64,7 +73,7 @@ public class ImageBlock extends Block {
         if (path != null && path.endsWith(".svg")) {
             drawSVG(context, params, target, url);
         } else {
-            target.add(PDFUtils.createImageChunk(context, maxWidth, maxHeight, url, getRotationRadian(context, params)));
+            target.add(PDFUtils.createImageChunk(context, evaledMaxWidth, evaledMaxHeight, url, getRotationRadian(context, params)));
         }
     }
 
@@ -79,8 +88,8 @@ public class ImageBlock extends Block {
         pt.transcode(ti, null);
 
         final Paper paper = new Paper();
-        paper.setSize(maxWidth, maxHeight);
-        paper.setImageableArea(0, 0, maxWidth, maxHeight);
+        paper.setSize(evaledMaxWidth, evaledMaxHeight);
+        paper.setImageableArea(0, 0, evaledMaxWidth, evaledMaxHeight);
         final float rotation = getRotationRadian(context, params);
 
         final PageFormat pf = new PageFormat();
@@ -89,21 +98,27 @@ public class ImageBlock extends Block {
         final SvgDrawer drawer = new SvgDrawer(context.getCustomBlocks(), rotation, pt, pf);
 
         //register a drawer that will do the job once the position of the map is known
-        paragraph.add(PDFUtils.createPlaceholderTable(maxWidth, maxHeight, spacingAfter, drawer, align, context.getCustomBlocks()));
+        paragraph.add(PDFUtils.createPlaceholderTable(evaledMaxWidth, evaledMaxHeight, spacingAfter, drawer, align, context.getCustomBlocks()));
     }
 
     public void setUrl(String url) {
         this.url = url;
     }
 
-    public void setMaxWidth(double maxWidth) {
+    public void setMaxWidth(String maxWidth) {
         this.maxWidth = maxWidth;
-        if (maxWidth < 0.0) throw new InvalidValueException("maxWidth", maxWidth);
+        try {  
+        	evaledMaxWidth = Double.parseDouble(maxWidth);  
+        	if (evaledMaxWidth < 0.0) throw new InvalidValueException("maxWidth", maxWidth);
+        } catch(NumberFormatException e){}
     }
 
-    public void setMaxHeight(double maxHeight) {
+    public void setMaxHeight(String maxHeight) {
         this.maxHeight = maxHeight;
-        if (maxHeight < 0.0) throw new InvalidValueException("maxHeight", maxHeight);
+        try {  
+        	evaledMaxHeight = Double.parseDouble(maxHeight);  
+        	if (evaledMaxHeight < 0.0) throw new InvalidValueException("maxHeight", maxHeight);
+        } catch(NumberFormatException e){}
     }
 
     public void setRotation(String rotation) {
@@ -128,10 +143,10 @@ public class ImageBlock extends Block {
             try {
                 final AffineTransform t = AffineTransform.getTranslateInstance(rectangle.getLeft(), rectangle.getBottom());
                 if (rotation != 0.0F) {
-                    t.rotate(rotation, maxWidth / 2.0, maxHeight / 2.0);
+                    t.rotate(rotation, evaledMaxWidth / 2.0, evaledMaxHeight / 2.0);
                 }
                 dc.transform(t);
-                g2 = new PdfGraphics2D(dc, (float) maxWidth, (float) maxHeight);
+                g2 = new PdfGraphics2D(dc, evaledMaxWidth.floatValue(), evaledMaxHeight.floatValue());
 
                 //avoid a warning from Batik
                 System.setProperty("org.apache.batik.warn_destination", "false");
