@@ -69,6 +69,7 @@ import org.mapfish.print.config.layout.ScalebarBlock;
 import java.util.regex.Matcher;
 import org.mapfish.print.config.layout.TableConfig;
 import java.util.regex.Pattern;
+import java.util.Base64;
 import org.mapfish.print.utils.PJsonObject;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -255,6 +256,9 @@ public class PDFUtils {
                             is.close();
                         }
                     }
+                } else if (uri.getScheme().equals("data")) {
+            		data = Base64.getDecoder().decode(uri.toString().split(",")[1]);
+            		return Image.getInstance(data);
                 } else {
                     GetMethod getMethod = null;
                     MetricRegistry registry = context.getConfig().getMetricRegistry();
